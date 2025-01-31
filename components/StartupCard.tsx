@@ -10,7 +10,6 @@ const StartupCard = ({ post }: { post: StartupTypeCard }) => {
 
     return (
         <li className='startup-card group'>
-            {/* Header with Date & Views */}
             <div className='flex-between'>
                 <p className='startup-card_date'>
                     {formatData(_createdAt)}
