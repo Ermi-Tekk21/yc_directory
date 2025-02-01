@@ -1,20 +1,14 @@
 import SearchForm from "@/components/SearchForm";
-import StartupCard from "@/components/StartupCard";
+import StartupCard, { StartupTypeCard } from "@/components/StartupCard";
+import { STARTUPS_QUERY } from "@/lib/queries";
+import { client } from "@/sanity/lib/client";
 
 export default async function Home({ searchParams }: { searchParams: Promise<{ query: string }> }) {
   const query = (await searchParams).query;
 
-  const posts = [
-    { _createdAt: new Date(), 
-      views: 100,
-      author: {_id: 1, name: "John Doe"},
-      _id: 1,
-      description: "A new way to connect with people",
-      image: 'https://plus.unsplash.com/premium_photo-1677094310899-02303289cadf?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cm9ib3R8ZW58MHx8MHx8fDA%3D',
-      category:"Robots",
-      title:"We Robots",
-    }
-  ]
+  const posts: StartupTypeCard[] = await client.fetch(STARTUPS_QUERY);
+
+
   return (
     <>
       <section className="pink_container">
@@ -26,12 +20,14 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
         <p className="text-30-semibold">
           {query ? `Search results for "${query}"` : 'Latest Startups'}
         </p>
+
         <ul className="mt-7 card_grid">
-          {/* Startups will be rendered here */}
-          {posts?.length > 0 && (
-            posts.map((post:StartupTypeCard, index: number)=>(
-                <StartupCard key={post?._id} post={post}/>
+          {posts?.length > 0 ? (
+            posts.map((post: StartupTypeCard) => (
+              <StartupCard key={post?._id} post={post} />
             ))
+          ) : (
+            <p className="no-results">No startups found</p>
           )}
         </ul>
       </search>
