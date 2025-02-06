@@ -5,6 +5,7 @@ import Link from 'next/link'
 import React from 'react'
 
 const SearchFormRest = () => {
+
     const reset = () => {
         const form = document.querySelector('.search-form') as HTMLFormElement
         if (form) {
@@ -12,9 +13,11 @@ const SearchFormRest = () => {
         }
     }
     return (
-        <div><button type='reset' onClick={reset}>
-            <Link href='/' className='search-btn text-white'><X className='size-5' /></Link>
-        </button></div>
+        <div>
+            <button type='reset' onClick={reset}>
+                <Link href='/' className='search-btn text-white'><X className='size-5' /></Link>
+            </button>
+        </div>
     )
 }
 
