@@ -49,7 +49,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return false; // Block sign-in if an error occurs
       }
     },
-    async jwt({ token, account, profile }: { token: JWT; account?: any ; profile?: Profile }) {
+    async jwt({ token, account, profile }: { token: JWT; account?: any; profile?: Profile }) {
       if (account && profile) {
         try {
           // Fetch the user from Sanity by GitHub ID
