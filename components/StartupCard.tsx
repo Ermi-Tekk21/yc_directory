@@ -3,11 +3,23 @@ import { EyeIcon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Author, Startup } from "@/sanity/types";
+import {Author, Slug} from "@/sanity/types";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export type StartupTypeCard = Omit<Startup, "author"> & {
-    author?: Author | null; // Allow null explicitly
+export type StartupTypeCard = {
+    _id: string;
+    _type: "startup";
+    _createdAt: string;
+    _updatedAt: string;
+    _rev: string;
+    title?: string | null; // Allow null to match fetched data
+    slug?: Slug | null;   // Change to Slug | null to match fetched data
+    author?: Author | null; // Already correct, matches fetched data
+    views?: number | null; // Allow null to match fetched data
+    description?: string | null; // Allow null to match fetched data
+    category?: string | null; // Allow null to match fetched data
+    image?: string | null; // Allow null to match fetched data
+    pitch?: string; // Optional, not in error message, so keep as is
 };
 
 const StartupCard = ({ post }: { post: StartupTypeCard }) => {
