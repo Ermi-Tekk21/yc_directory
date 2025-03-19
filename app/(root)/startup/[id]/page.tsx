@@ -18,12 +18,31 @@ const md = markdownit();
 
 export const experimental_ppr = true;
 
+// Define the type for the `post` object
+interface Post extends Omit<StartupTypeCard, "author"> {
+    _createdAt: string;
+    title: string;
+    description: string;
+    image: string;
+    author: {
+        _id: string;
+        image: string;
+        name: string;
+        username: string;
+    };
+    category: string;
+    pitch?: string;
+}
+
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
     const id = (await params).id;
 
+    // Fetch data with proper typing
     const [post, editorPosts] = await Promise.all([
-        client.fetch(STARTUP_BY_ID_QUERY, { id }),
-        client.fetch(PLAYLIST_BY_SLUG_QUERY, {
+        client
+            .withConfig({useCdn: true}) // ISR
+            .fetch<Post>(STARTUP_BY_ID_QUERY, { id }),
+        client.fetch<StartupTypeCard[]>(PLAYLIST_BY_SLUG_QUERY, {
             slug: "editor-picks-new",
         }),
     ]);
@@ -42,6 +61,7 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
             </section>
 
             <section className="section_container">
+                {/* Ensure `post.image` is a string */}
                 <img
                     src={post.image}
                     alt="thumbnail"
@@ -86,20 +106,21 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
 
                 <hr className="divider" />
 
+                {/* Ensure `editorPosts` is an array of `StartupTypeCard` */}
                 {editorPosts?.length > 0 && (
                     <div className="max-w-4xl mx-auto">
                         <p className="text-30-semibold">Editor Picks</p>
 
                         <ul className="mt-7 card_grid-sm">
-                            {editorPosts.map((post: StartupTypeCard, i: number) => (
+                            {editorPosts.map((post, i) => (
                                 <StartupCard key={i} post={post} />
                             ))}
                         </ul>
                     </div>
                 )}
-
                 <Suspense fallback={<Skeleton className="view_skeleton" />}>
-                    <View id={id} />
+                    {/*ISR*/}
+                    <View id={id}/>
                 </Suspense>
             </section>
         </>
