@@ -1,7 +1,7 @@
 import { createClient } from "next-sanity";
 
 import { apiVersion, dataset, projectId } from "../env";
-
+// sanity read client to fetch data from the Sanity API
 export const client = createClient({
   projectId,
   dataset,
