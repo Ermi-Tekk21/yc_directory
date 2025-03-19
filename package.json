@@ -30,7 +30,7 @@
     "lucide-react": "^0.464.0",
     "markdown-it": "^14.1.0",
     "next": "15.2.0-canary.33",
-    "next-auth": "^5.0.0-beta.25",
+    "next-auth": "5.0.0-beta.25",
     "next-sanity": "^9.8.29-canary.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
