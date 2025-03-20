@@ -8,18 +8,18 @@ import { notFound } from "next/navigation";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 import Image from "next/image";
-
 import markdownit from "markdown-it";
 import { Skeleton } from "@/components/ui/skeleton";
 import View from "@/components/view";
-import StartupCard, { StartupTypeCard } from "@/components/StartupCard";
+import StartupCard, { StartupTypeCard } from "@/components/StartupCard"; // Import StartupTypeCard
 
 const md = markdownit();
 
 export const experimental_ppr = true;
 
 // Define the type for the `post` object
-interface Post extends Omit<StartupTypeCard, "author"> {
+interface Post {
+    _id: string;
     _createdAt: string;
     title: string;
     description: string;
@@ -34,15 +34,26 @@ interface Post extends Omit<StartupTypeCard, "author"> {
     pitch?: string;
 }
 
+// Define the EditorsPick type using StartupTypeCard
+interface EditorsPick {
+    _id: string;
+    title: string;
+    slug: {
+        current: string;
+        _type: "slug";
+    };
+    select: StartupTypeCard[];
+}
+
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
     const id = (await params).id;
 
     // Fetch data with proper typing
     const [post, editorPosts] = await Promise.all([
         client
-            .withConfig({useCdn: true}) // ISR
+            .withConfig({ useCdn: true }) // ISR
             .fetch<Post>(STARTUP_BY_ID_QUERY, { id }),
-        client.fetch<StartupTypeCard[]>(PLAYLIST_BY_SLUG_QUERY, {
+        client.fetch<EditorsPick>(PLAYLIST_BY_SLUG_QUERY, {
             slug: "editor-picks-new",
         }),
     ]);
@@ -50,18 +61,17 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
     if (!post) return notFound();
 
     const parsedContent = md.render(post?.pitch || "");
+    console.log("editors pick: ", editorPosts);
 
     return (
         <>
             <section className="pink_container !min-h-[230px]">
                 <p className="tag">{formatDate(post?._createdAt)}</p>
-
                 <h1 className="heading">{post.title}</h1>
                 <p className="sub-heading !max-w-5xl">{post.description}</p>
             </section>
 
             <section className="section_container">
-                {/* Ensure `post.image` is a string */}
                 <img
                     src={post.image}
                     alt="thumbnail"
@@ -81,7 +91,6 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
                                 height={64}
                                 className="rounded-full drop-shadow-lg"
                             />
-
                             <div>
                                 <p className="text-20-medium">{post.author?.name}</p>
                                 <p className="text-16-medium !text-black-300">
@@ -89,7 +98,6 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
                                 </p>
                             </div>
                         </Link>
-
                         <p className="category-tag">{post.category}</p>
                     </div>
 
@@ -106,21 +114,18 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
 
                 <hr className="divider" />
 
-                {/* Ensure `editorPosts` is an array of `StartupTypeCard` */}
-                {editorPosts?.length > 0 && (
+                {editorPosts?.select?.length > 0 && (
                     <div className="max-w-4xl mx-auto">
                         <p className="text-30-semibold">Editor Picks</p>
-
                         <ul className="mt-7 card_grid-sm">
-                            {editorPosts.map((post, i) => (
+                            {editorPosts.select.map((post, i) => (
                                 <StartupCard key={i} post={post} />
                             ))}
                         </ul>
                     </div>
                 )}
                 <Suspense fallback={<Skeleton className="view_skeleton" />}>
-                    {/*ISR*/}
-                    <View id={id}/>
+                    <View id={id} />
                 </Suspense>
             </section>
         </>
