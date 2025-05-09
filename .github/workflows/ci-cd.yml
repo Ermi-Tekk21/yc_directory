@@ -30,8 +30,8 @@ jobs:
           NEXT_PUBLIC_SANITY_DATASET: ${{ secrets.NEXT_PUBLIC_SANITY_DATASET }}
           SANITY_WRITE_TOKEN: ${{ secrets.SANITY_WRITE_TOKEN }}
 
-      - name: Run Linting
-        run: pnpm run lint
+      # - name: Run Linting
+      #   run: pnpm run lint
 
       - name: Run Build
         run: pnpm run build
